@@ -2,7 +2,7 @@
 
 An Agentic AI portfolio project that showcases multi-agent orchestration, safety guardrails, CSV mail merge, and automated sending—powered by the official OpenAI Python SDK (pointed at a local Ollama endpoint by default).
 
-## ✨ Features
+## Features
 
 1. **Agentic orchestration:** A Sales Manager agent coordinates three specialist writers (professional, humorous, concise) and automatically selects the best draft via scoring.
 2. **OpenAI SDK + local bridge:** Uses the OpenAI Python SDK while allowing custom `base_url` + key so you can run against OpenAI-hosted models or self-hosted ones (e.g., Ollama).
@@ -10,7 +10,7 @@ An Agentic AI portfolio project that showcases multi-agent orchestration, safety
 4. **CSV-driven personalization:** Upload a `name,email` CSV and a sender/team name; approval triggers personalized replacements such as `[Recipient name]` and `[Your name]` before sending.
 5. **Approval workflow:** Approve & Send or Reject & Regenerate, with success/failure reporting per recipient.
 
-## 🧠 Agentic Workflow
+## Agentic Workflow
 
 The flow diagram below maps the full process:
 
@@ -24,7 +24,7 @@ The flow diagram below maps the full process:
 
 ![Sales Agent Flow](Docs/img/sales_agent_flow.png)
 
-## 🖼️ UI Walkthrough
+## UI Walkthrough
 
 | Step | Screenshot |
 |------|------------|
@@ -32,7 +32,7 @@ The flow diagram below maps the full process:
 | Review generated draft + candidate scores | ![Screenshot 2](Docs/img/screenshot2.png) |
 | Approve, send, or regenerate | ![Screenshot 3](Docs/img/screenshot3.png) |
 
-## 🚀 Getting Started
+## Getting Started
 
 1. **Install deps**
 
@@ -61,12 +61,12 @@ The flow diagram below maps the full process:
    - Upload a CSV such as `Docs/Example-contacts.csv`.
    - Generate → review → approve/send. Logs track guardrail status and SendGrid deliveries.
 
-## 🛡️ Guardrails
+## Guardrails
 
 - **Input guardrail:** Regex-based prompt-injection + PII detection with configurable `RISK_THRESHOLD`. Blocks high-confidence detections and returns structured metadata.
 - **Output guardrail:** Secret-leak detection (API keys, passwords). Extend `leak_patterns` for additional credentials. Both guardrails log JSON records for observability.
 
-## 📂 Repo Structure (highlights)
+## Repo Structure (highlights)
 
 ```text
 ├─ agent_setup.py        # Defines agents, LLM models, and tools
@@ -79,7 +79,7 @@ The flow diagram below maps the full process:
 └─ requirements.txt
 ```
 
-## ✅ Portfolio Notes
+## Portfolio Notes
 
 - Built entirely with the **OpenAI Python SDK**, highlighting how to retarget it to local inference endpoints.
 - Demonstrates practical AI-engineering skills: multi-agent coordination, safety instrumentation, async orchestration, and transactional email delivery.

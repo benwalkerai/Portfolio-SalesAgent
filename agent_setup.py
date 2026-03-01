@@ -46,7 +46,7 @@ except Exception as e:
 
 try:
     BASE_MODEL3 = OpenAIChatCompletionsModel(model="llama3.2:3b", openai_client=ollama_client)
-    logger.info("✓ BASE_MODEL3 (llama3.2:3b) initialized")
+    logger.info("✓ BASE_MODEL3 (BASE_MODEL2) initialized")
 except Exception as e:
     logger.error(f"✗ Failed to initialize BASE_MODEL3: {e}", exc_info=True)
     raise
