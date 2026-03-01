@@ -14,12 +14,6 @@ logger = setup_logger(__name__)
 set_tracing_disabled(True)
 logger.info("Tracing disabled (local-only mode)")
 
-def setup_env():
-    """Load environment variables from the local .env file."""
-    load_dotenv()
-    logger.info("Environment variables loaded from .env file")
-
-
 def _require_env(var_name: str) -> str:
     """Return the value of a required environment variable or raise an error."""
     value = os.environ.get(var_name)
@@ -29,7 +23,7 @@ def _require_env(var_name: str) -> str:
             "Ensure your .env or deployment config defines it before starting the app."
         )
     return value
-
+load_dotenv()
 LLM_API_KEY = _require_env('LLM_API_KEY')
 LLM_API_URL = _require_env('LLM_API_URL')
 

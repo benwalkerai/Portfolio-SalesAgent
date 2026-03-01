@@ -99,8 +99,9 @@ def _apply_mail_merge(text: str, recipient_name: str, sender_name: str) -> str:
     lowercase_replacements = {key.lower(): value for key, value in replacements.items()}
     pattern = re.compile("|".join(re.escape(key) for key in lowercase_replacements), re.IGNORECASE)
 
-    def _replace(match: re.Match) -> str:
+    def _replace(match: re.Match[str]) -> str:
         return lowercase_replacements.get(match.group(0).lower(), match.group(0))
+    
 
     return pattern.sub(_replace, text)
 
@@ -137,7 +138,7 @@ def _parse_agent_email_output(agent_output: str) -> Tuple[str, str]:
     if not subject:
         subject_match = re.search(r"^subject(?:\s+line)?\s*[:\-]\s*(.+)$", cleaned, re.IGNORECASE | re.MULTILINE)
         if subject_match:
-            subject = subject_match.group(1).strip()
+            subject = str(subject_match.group(1)).strip()
             # Body is text after subject declaration
             after_subject = cleaned[subject_match.end():].strip()
             body = after_subject or body
@@ -152,7 +153,7 @@ def _parse_agent_email_output(agent_output: str) -> Tuple[str, str]:
         if not body:
             body = cleaned
 
-    return subject or default_subject, body
+    return str(subject or default_subject), str(body)
 
 
 def _is_valid_email_content(subject: str | None, body: str | None) -> bool:
@@ -476,7 +477,7 @@ def clear_cache_and_ui():
                 agent.cache = {}
                 cleared_count += 1
             if hasattr(agent, 'clear_cache'):
-                agent.clear_cache()
+                agent.clear_cache() #type: ignore[attr=defined]
                 cleared_count += 1
         except Exception as e:
             logger.warning(f"Error clearing cache for agent {agent.name}: {e}")
@@ -548,8 +549,8 @@ async def send_approved_email(email_draft: str, recipients: List[dict[str, str]]
             send_results.append({
                 "recipient": recipient_email or recipient_name or "default",
                 "status": result.get('status', 'error'),
-                "message": result.get('message'),
-                "status_code": result.get('status_code')
+                "message": result.get('message', ''),
+                "status_code": str(result.get('status_code', '')),
             })
 
         success_count = sum(1 for res in send_results if res["status"] == "success")
