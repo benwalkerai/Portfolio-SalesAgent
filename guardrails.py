@@ -12,11 +12,9 @@ from models import InputGuardrailOutput, OutputGuardrailOutput
 
 logger = setup_logger('guardrails', use_json=True)
 
-# Security thresholds
 RISK_THRESHOLD = float(os.environ.get('RISK_THRESHOLD', '0.75'))
 TOXICITY_THRESHOLD = float(os.environ.get('TOXICITY_THRESHOLD', '0.8'))
 
-# Regex patterns for prompt injection
 PROMPT_INJECTION_PATTERNS = [
     r'ignore\s+all\s+previous\s+instructions',
     r'forget\s+your\s+role',
@@ -25,7 +23,6 @@ PROMPT_INJECTION_PATTERNS = [
     r'\[INST\].*ignore',
 ]
 
-# PII patterns
 PII_PATTERNS = [
     r'\b\d{3}-\d{2}-\d{4}\b',  # SSN
     r'\b\d{16}\b',  # Credit card
@@ -35,7 +32,6 @@ PII_PATTERNS = [
 
 
 def heuristic_injection_check(text: str) -> tuple[bool, List[str]]:
-    """Check for obvious prompt injection patterns"""
     detected_patterns = []
     text_lower = text.lower()
     
@@ -48,7 +44,6 @@ def heuristic_injection_check(text: str) -> tuple[bool, List[str]]:
 
 
 def heuristic_pii_check(text: str) -> tuple[bool, List[str], float]:
-    """Check for PII"""
     detected_pii = []
     
     for pattern in PII_PATTERNS:
@@ -62,12 +57,9 @@ def heuristic_pii_check(text: str) -> tuple[bool, List[str], float]:
 
 @input_guardrail
 async def comprehensive_input_guardrail(ctx, agent, message):
-    """Simple input guardrail - only blocks obvious attacks"""
     logger.info(f"Running input guardrail on message length: {len(message)}")
     
-    # Check for prompt injection
     has_injection, injection_issues = heuristic_injection_check(message)
-    # Check for PII
     has_pii, pii_issues, pii_confidence = heuristic_pii_check(message)
 
     flagged_issues: List[str] = []
@@ -125,7 +117,6 @@ async def comprehensive_input_guardrail(ctx, agent, message):
             tripwire_triggered=True
         )
     
-    # Passed guardrail
     logger.info("Input passed guardrail checks")
     return GuardrailFunctionOutput(
         output_info={
@@ -138,12 +129,10 @@ async def comprehensive_input_guardrail(ctx, agent, message):
 
 @output_guardrail
 async def comprehensive_output_guardrail(ctx, agent, output):
-    """Simple output guardrail - only blocks actual data leaks"""
     logger.info(f"Running output guardrail on output length: {len(str(output))}")
     
     output_text = str(output)
     
-    # Check for API keys or passwords
     leak_patterns = [
         r'api[_-]?key[:=]\s*["\']?[^\s"\'\n]+',
         r'password[:=]\s*["\']?[^\s"\'\n]+',
@@ -185,7 +174,6 @@ async def comprehensive_output_guardrail(ctx, agent, output):
             tripwire_triggered=True
         )
     
-    # Passed guardrail
     logger.info("Output passed guardrail checks")
     return GuardrailFunctionOutput(
         output_info={

@@ -3,18 +3,14 @@ Pydantic models for data validation
 
 Author: Ben Walker (BenRWalker@icloud.com)
 """
-
-# Modules
 from pydantic import BaseModel, Field
 from typing import Optional, List
 
 class NameCheckOutput(BaseModel):
-    """Output model for name checking guardrail"""
     is_name_in_message: bool
     name: str
 
 class InputGuardrailOutput(BaseModel):
-    """Comprehensive input guardrail check output"""
     is_safe: bool = Field(description="Whether the input is safe to process")
     is_prompt_injection: bool = Field(description="Whether prompt injection detected")
     contains_pii: bool = Field(description="Whether PII detected")
@@ -25,7 +21,6 @@ class InputGuardrailOutput(BaseModel):
     sanitized_input: Optional[str] = Field(description="Sanitized version if modifications needed")
 
 class OutputGuardrailOutput(BaseModel):
-    """Output guardrail check output"""
     is_safe: bool = Field(description="Whether the output is safe to return")
     contains_sensitive_data: bool = Field(description="Whether output leaks sensitive data")
     is_harmful_content: bool = Field(description="Whether output contains harmful content")

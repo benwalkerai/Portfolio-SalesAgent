@@ -16,20 +16,16 @@ from sendgrid.helpers.mail import Content, Email, Mail, To
 from agents import function_tool
 from logger_config import setup_logger
 
-# Set up logger for this module
 logger = setup_logger(__name__)
 
-# Load environment variables
 load_dotenv()
 
-# Get email configuration from environment
 from_email: Optional[str] = os.environ.get('FROM_EMAIL')
 to_email: Optional[str] = os.environ.get('TO_EMAIL')
 
 logger.info(f"Email service configured - From: {from_email}, To: {to_email}")
 
 async def send_html_email(subject: str, html_body: str, recipient_email: Optional[str] = None) -> Dict[str, Any]:
-    """Send an email with the given subject and HTML body to all sales prospects."""
     logger.info(f"Attempting to send email with subject: {subject}")
     logger.debug(f"Email body length: {len(html_body)} characters")
     
@@ -99,6 +95,4 @@ async def send_html_email(subject: str, html_body: str, recipient_email: Optiona
             "message": str(e)
         }
 
-
-# Tool wrapper for agent usage
 send_html_email_tool = function_tool(send_html_email)

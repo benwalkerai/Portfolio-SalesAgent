@@ -22,10 +22,8 @@ from models import NameCheckOutput, InputGuardrailOutput, OutputGuardrailOutput
 from email_service import send_html_email_tool
 from logger_config import setup_logger
 
-# Set up logger for this module
 logger = setup_logger('agent_setup')
 
-# Create model instances
 try:
     BASE_MODEL1 = OpenAIChatCompletionsModel(model="mistral:7b", openai_client=ollama_client)
 except Exception as e:

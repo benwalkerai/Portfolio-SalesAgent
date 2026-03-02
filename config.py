@@ -15,7 +15,6 @@ set_tracing_disabled(True)
 logger.info("Tracing disabled (local-only mode)")
 
 def _require_env(var_name: str) -> str:
-    """Return the value of a required environment variable or raise an error."""
     value = os.environ.get(var_name)
     if not value:
         raise RuntimeError(

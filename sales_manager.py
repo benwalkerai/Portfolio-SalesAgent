@@ -10,11 +10,11 @@ from agent_setup import BASE_MODEL2, sales_tools
 from guardrails import comprehensive_input_guardrail, comprehensive_output_guardrail
 from logger_config import setup_logger
 
-# Set up logger for this module
+
 logger = setup_logger('sales_manager')
 
 logger.info("Creating Sales Manager Agent")
-# Create the main sales manager agent with enhanced guardrails
+
 careful_sales_manager = Agent(
     name="Sales Manager",
     instructions=SALES_MANAGER_INSTRUCTIONS,

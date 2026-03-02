@@ -13,50 +13,36 @@ from datetime import datetime
 from pathlib import Path
 from pythonjsonlogger import jsonlogger
 
-# Create logs directory if it doesn't exist
 LOGS_DIR = Path("logs")
 LOGS_DIR.mkdir(exist_ok=True)
 
-# Log file paths
 MAIN_LOG_FILE = LOGS_DIR / "sales_agent.log"
 ERROR_LOG_FILE = LOGS_DIR / "sales_agent_errors.log"
 AGENT_LOG_FILE = LOGS_DIR / "agent_activity.log"
 GUARDRAIL_LOG_FILE = LOGS_DIR / "guardrails.log"
 
-# Log rotation settings
-MAX_BYTES = 10 * 1024 * 1024 # 10MB
+MAX_BYTES = 10 * 1024 * 1024
 BACKUP_COUNT = 5
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
-    """
-    Custom JSON formatter that adds additional context to logs
-    """
     def add_fields(self, log_record, record, message_dict):
         super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
         
-        # Add timestamp in ISO format
         if not log_record.get('timestamp'):
             log_record['timestamp'] = datetime.utcnow().isoformat() + 'Z'
         
-        # Add level name
         if log_record.get('level'):
             log_record['level'] = log_record['level'].upper()
         else:
             log_record['level'] = record.levelname
         
-        # Add application context
         log_record['application'] = 'sales_agent'
         
-        # Add module and function info
         log_record['module'] = record.module
         log_record['function'] = record.funcName
         log_record['line_number'] = record.lineno
 
 class ColoredConsoleFormatter(logging.Formatter):
-    """
-    Colored console formatter for better readability
-    """
-    # ANSI color codes
     COLORS = {
         'DEBUG': '\033[36m',      # Cyan
         'INFO': '\033[32m',       # Green
@@ -67,7 +53,6 @@ class ColoredConsoleFormatter(logging.Formatter):
     }
     
     def format(self, record):
-        # Add color to level name
         levelname = record.levelname
         if levelname in self.COLORS:
             record.levelname = f"{self.COLORS[levelname]}{levelname}{self.COLORS['RESET']}"
@@ -97,11 +82,9 @@ def setup_logger(
     logger = logging.getLogger(name)
     logger.setLevel(level)
     
-    # Prevent duplicate handlers
     if logger.handlers:
         return logger
     
-    # Console handler with colored output
     if log_to_console:
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(level)
@@ -113,10 +96,7 @@ def setup_logger(
         console_handler.setFormatter(console_format)
         logger.addHandler(console_handler)
     
-    # File handler with rotation
     if log_to_file:
-        # Determine log file based on logger name
-        # FIXED: Better routing logic for agent-related logs
         if 'guardrail' in name.lower():
             log_file = GUARDRAIL_LOG_FILE
         elif any(keyword in name.lower() for keyword in ['agent', 'sales', 'email_service', 'interface']):
@@ -133,13 +113,11 @@ def setup_logger(
         file_handler.setLevel(level)
         
         if use_json:
-            # JSON formatter for machine-readable logs
             json_format = CustomJsonFormatter(
                 fmt='%(timestamp)s %(level)s %(name)s %(message)s'
             )
             file_handler.setFormatter(json_format)
         else:
-            # Standard text formatter
             text_format = logging.Formatter(
                 fmt='%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S'
@@ -148,7 +126,6 @@ def setup_logger(
         
         logger.addHandler(file_handler)
     
-    # Separate error file handler (always enabled if file logging is on)
     if log_to_file:
         error_handler = logging.handlers.RotatingFileHandler(
             ERROR_LOG_FILE,
@@ -170,24 +147,16 @@ def setup_logger(
         
         logger.addHandler(error_handler)
     
-    # Don't propagate to root logger
     logger.propagate = False
     
     return logger
 
 
 def get_log_level_from_env() -> int:
-    """
-    Get log level from environment variable
-    
-    Returns:
-        Logging level (defaults to INFO)
-    """
     level_name = os.environ.get('LOG_LEVEL', 'INFO').upper()
     return getattr(logging, level_name, logging.INFO)
 
 
-# Create default application logger
 app_logger = setup_logger(
     'sales_agent',
     level=get_log_level_from_env(),

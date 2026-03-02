@@ -164,7 +164,10 @@ Portfolio-SalesAgent/
 ├── sales_manager.py         # Central Sales Manager agent with guardrails
 ├── guardrails.py            # Input/output guardrail implementations
 ├── email_service.py         # SendGrid integration and email-sending tools
-├── interface.py             # Gradio UI: compose, review, approve, send workflow
+├── email_workflow.py        # Agent orchestration, generation pipeline, sending logic
+├── mail_merge.py            # Text parsing, HTML normalization, and personalization
+├── scoring.py               # EmailCandidate model and quality scoring
+├── interface.py             # Gradio UI layer and callback wiring only
 ├── config.py                # LLM client setup, environment validation
 ├── prompts.py               # Instructions for all agents (professional, humorous, concise, etc.)
 ├── models.py                # Pydantic models for guardrail outputs and agent responses
@@ -226,7 +229,7 @@ To extend this project:
 - **Add new writing agents:** Create new `Agent` instances in `agent_setup.py` with unique personas
 - **Customize guardrails:** Edit patterns in `guardrails.py` or add new guardrail functions
 - **Switch LLM backends:** Update `LLM_API_URL` and model names in `.env`
-- **Adjust scoring logic:** Modify candidate evaluation in `interface.py` → `score_candidates()`
+- **Adjust scoring logic:** Modify candidate evaluation in `scoring.py` → `_score_email()`
 - **Monitor email delivery:** Check `email_logger.py` for SendGrid webhook handling and status updates
 
 ## Author & License
